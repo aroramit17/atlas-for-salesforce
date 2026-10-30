@@ -325,9 +325,13 @@ async function reviewData() {
     const phrase = `APPLY ${plan.count} ${plan.object}`;
     state.dataPlan = { csv, object: plan.object, mode, externalIdField, count: plan.count, phrase, host: state.context.host };
     clear(target);
-    target.append(resultTitle(`${mode[0].toUpperCase()}${mode.slice(1)} ${plan.object}`, `${plan.count} rows`));
-    target.append(node('p', 'muted small', `Columns: ${plan.headers.join(', ')}. Previewing the first five rows. All ${plan.count} rows will be sent together with allOrNone enabled.`));
-    target.append(table(plan.headers, plan.records.slice(0, 5).map(record => plan.headers.map(name => name.toLowerCase() === 'id' ? record.id : record[Object.keys(record).find(key => key.toLowerCase() === name.toLowerCase())] ?? ''))));
+    target.append(resultTitle(`${mode[0].toUpperCase()}${mode.slice(1)} ${plan.object}`, `${plan.count} ${plan.count === 1 ? 'row' : 'rows'}`));
+    target.append(node('p', 'muted small', `Columns: ${plan.headers.join(', ')}. Previewing the first five rows. All ${plan.count} ${plan.count === 1 ? 'row' : 'rows'} will be sent together with allOrNone enabled.`));
+    target.append(table(plan.headers, plan.records.slice(0, 5).map(record => plan.headers.map(name => {
+      if (name.toLowerCase() === 'id') return record.id;
+      const key = Object.keys(record).find(item => item.toLowerCase() === name.toLowerCase());
+      return key === undefined ? '(omitted)' : record[key] === null ? 'CLEAR FIELD (#NULL)' : record[key];
+    }))));
     $('#data-phrase').textContent = phrase;
     $('#data-confirm-input').value = '';
     $('#data-confirm').hidden = false;

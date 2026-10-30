@@ -46,7 +46,12 @@ export function prepareMutation(source, objectName, mode, describe, externalIdFi
   const idIndex = parsed.headers.findIndex(name => name.toLowerCase() === 'id');
   const external = mode === 'upsert' ? assertObjectName(externalIdField) : '';
   const externalField = mode === 'upsert' ? fields.get(external.toLowerCase()) : null;
+  if (mode === 'create' && describe?.createable === false) throw new Error(`${object} cannot be created by this user.`);
+  if (mode === 'update' && describe?.updateable === false) throw new Error(`${object} cannot be updated by this user.`);
+  if (mode === 'delete' && describe?.deletable === false) throw new Error(`${object} cannot be deleted by this user.`);
+  if (mode === 'upsert' && (describe?.createable === false || describe?.updateable === false)) throw new Error(`${object} cannot be upserted by this user.`);
   if (mode === 'create' && idIndex !== -1) throw new Error('Remove the Id column when creating records.');
+  if (mode === 'upsert' && idIndex !== -1) throw new Error('Remove the Id column when upserting by external ID.');
   if (['update', 'delete'].includes(mode) && idIndex === -1) throw new Error('Update and delete CSV files need an Id column.');
   if (mode === 'delete' && parsed.headers.length !== 1) throw new Error('Delete CSV files may contain only an Id column.');
   if (mode === 'upsert' && (!externalField?.externalId || !parsed.headers.some(name => name.toLowerCase() === external.toLowerCase()))) {

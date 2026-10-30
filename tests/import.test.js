@@ -27,6 +27,8 @@ test('mutation preparation honors field permissions and operation keys', () => {
   const upsert = prepareMutation('External_Id__c,Name\nA-1,Acme', 'Account', 'upsert', describe, 'External_Id__c');
   assert.equal(upsert.records[0].External_Id__c, 'A-1');
   assert.throws(() => prepareMutation('Name\nAcme', 'Account', 'upsert', describe, 'External_Id__c'));
+  assert.throws(() => prepareMutation('Id,External_Id__c\n001000000000000AAA,A-1', 'Account', 'upsert', describe, 'External_Id__c'));
+  assert.throws(() => prepareMutation('Name\nAcme', 'Account', 'create', { ...describe, createable: false }));
 });
 
 test('delete requires only valid IDs and operations have a 200-row cap', () => {
