@@ -58,6 +58,16 @@ export function isSafeNextUrl(path) {
   return typeof path === 'string' && /^\/services\/data\/v[0-9]+\.[0-9]+\/(?:query|tooling\/query)\/[A-Za-z0-9-]+(?:\?.*)?$/.test(path);
 }
 
+export function assertApiPath(value) {
+  const path = String(value || '').trim();
+  if (!path.startsWith(`/services/data/${API_VERSION}/`) || path.startsWith('//') || path.includes('\\') || path.includes('#') || /[\x00-\x20]/.test(path)) {
+    throw new Error(`Use a relative /services/data/${API_VERSION}/ path.`);
+  }
+  const url = new URL(path, 'https://example.salesforce.com');
+  if (url.origin !== 'https://example.salesforce.com' || !url.pathname.startsWith(`/services/data/${API_VERSION}/`)) throw new Error('Blocked an unexpected API path.');
+  return `${url.pathname}${url.search}`;
+}
+
 export function orgColor(host) {
   let hash = 2166136261;
   for (const char of host) hash = Math.imul(hash ^ char.charCodeAt(0), 16777619);

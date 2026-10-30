@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { salesforceContext, assertObjectName, assertRecordId, assertReadOnlySoql, assertRelativeSalesforcePath, isSafeNextUrl, orgColor } from '../src/core/salesforce.js';
+import { salesforceContext, assertObjectName, assertRecordId, assertReadOnlySoql, assertRelativeSalesforcePath, assertApiPath, isSafeNextUrl, orgColor } from '../src/core/salesforce.js';
 import { recordsToCsv } from '../src/core/csv.js';
 
 test('maps Lightning production and sandbox tabs to their API host', () => {
@@ -36,6 +36,13 @@ test('accepts only relative Salesforce query cursors', () => {
   assert.equal(isSafeNextUrl('https://evil.example/'), false);
   assert.equal(isSafeNextUrl('//evil.example/services/data/v61.0/query/x'), false);
   assert.equal(isSafeNextUrl('/services/data/v61.0/sobjects/Account'), false);
+});
+
+test('REST workbench stays on the versioned Salesforce API path', () => {
+  assert.equal(assertApiPath('/services/data/v61.0/limits?x=1'), '/services/data/v61.0/limits?x=1');
+  assert.throws(() => assertApiPath('https://evil.example/services/data/v61.0/limits'));
+  assert.throws(() => assertApiPath('/services/data/v61.0/../../Soap/m/61.0'));
+  assert.throws(() => assertApiPath('//evil.example/services/data/v61.0/limits'));
 });
 
 test('CSV escapes quotes, unions columns, and guards spreadsheet formulas', () => {

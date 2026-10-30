@@ -1,13 +1,15 @@
 # Security policy
 
-## Reporting a vulnerability
+## Report a vulnerability
 
-Please open a private GitHub security advisory in the repository that hosts this project. If advisories are unavailable, contact the repository maintainer privately before posting exploit details publicly. Include the affected version, reproduction steps, and impact. There is no paid bug bounty.
+Open a private GitHub security advisory in this repository. If advisories are unavailable, contact the maintainer privately before publishing exploit details. Include the affected version, reproduction steps, and impact. There is no paid bug bounty.
 
 ## Security model
 
-Atlas reads the active Salesforce tab and its `sid` cookie only when an operation needs API access. The cookie is used in the extension service worker for direct HTTPS requests to the mapped Salesforce API host. It is not saved, logged, included in UI messages, or sent to a third-party server. Requests are GET only, do not follow redirects, and accept only constrained Salesforce API paths. The side panel writes untrusted Salesforce values with `textContent`, not HTML. CSV cells guard against spreadsheet formula execution.
+Atlas reads the active Salesforce tab and its `sid` cookie when an API operation needs it. The service worker sends requests directly over HTTPS to the mapped Salesforce API host, with redirects blocked. It does not save, log, or expose the cookie to the side panel. API paths for the general workbench must remain under the configured Salesforce REST version; all other tools use fixed endpoints or constrained identifiers. Salesforce responses are rendered as text, not HTML. CSV exports escape spreadsheet formulas.
 
-Chrome host permissions are broad enough to cover common Salesforce and Force domains. Review the manifest before installation and use Chrome's site-access controls if your organization requires narrower access. Custom quick links are stored locally and may contain sensitive path data; avoid placing secrets in them.
+Version 0.2 adds write operations: CSV record create/update/upsert/delete, a REST workbench with write methods, and Metadata API ZIP deployment. Data changes require a review step and an exact phrase; REST writes require `WRITE`; metadata validation and deployment require `VALIDATE` or `DEPLOY`. The active org host is checked again when the request is sent. These prompts reduce accidental clicks but are not a substitute for reviewing the target org and payload. The REST workbench can invoke powerful Salesforce endpoints, and metadata ZIPs can contain destructive changes. Use an appropriately privileged account and validate packages in a non-production org.
 
-This project has not been audited. A user's org permissions and Salesforce session policies remain the enforcement boundary for Salesforce data.
+Chrome host permissions cover common Salesforce and Force domains. Review `manifest.json` and your organization's extension policy before installation. Custom links and chosen org colors are stored in Chrome's local extension storage; links can contain sensitive path data, so do not put secrets in them. Query results, CSV contents, API responses, and ZIP contents are kept in memory during the side-panel session and are not sent to any third-party service.
+
+This project has not had an independent security audit. Salesforce permissions, session policy, and API limits remain the enforcement boundary. Check-only metadata validation succeeded in a Developer Edition org; live data writes, REST writes, and committing deployments remain unverified. See [verification notes](docs/EXPANSION_TEST.md).

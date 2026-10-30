@@ -1,111 +1,95 @@
 # Atlas for Salesforce
 
-A small, original, open-source Salesforce workspace for Chrome. Atlas puts record inspection, object and field browsing, read-only SOQL, CSV export, quick links, Apex component lookup, and recent debug logs in one side panel. It runs entirely in your browser and has no backend or telemetry.
+An independent, open-source Chrome side panel for Salesforce administrators and developers. Atlas combines record inspection, SOQL and CSV export, schema and source discovery, org navigation, and carefully reviewed data and metadata operations. It uses plain JavaScript and CSS, with no build step, backend, telemetry, or third-party runtime dependencies.
 
-Atlas is an independent community project. It is not affiliated with Salesforce or the extensions studied in [the research notes](docs/RESEARCH.md).
+Atlas is not affiliated with Salesforce or the extensions below. Its code, design, and icons are original. The comparison describes specific workflows, not complete feature or user-count parity.
 
-## Which extensions can Atlas replace?
+## Coverage of five popular utility extensions
 
-Atlas can replace **specific everyday workflows** from these five Chrome extensions if those are the only features you use. It does not reproduce every feature of any one extension. Each tool below was implemented independently; the linked products are neither dependencies nor endorsements.
-
-| Chrome extension | Workflow Atlas covers | Features to keep the original extension for |
+| Extension | Atlas capabilities | Remaining differences |
 | --- | --- | --- |
-| [Salesforce Inspector Reloaded](https://chromewebstore.google.com/detail/salesforce-inspector-relo/hpijlohoihegkfehhibggnkbjhoemldh) | Inspect records and fields, run read-only SOQL and export CSV, browse schema, and read recent logs. | Data import, metadata deployment, write API calls, and its broader developer tools. |
-| [ORGanizer for Salesforce](https://chromewebstore.google.com/detail/organizer-for-salesforce/lojdmgdchjcfnmkmodggbaafecagllnh) | Recognize an org and open standard or saved quick links. | Stored accounts, login automation, and its broader multi-org tools. |
-| [Salesforce Colored Favicons](https://chromewebstore.google.com/detail/salesforce-colored-favico/peohlnebahcddpmfaplmilpkgbkkcdho) | Distinguish supported org tabs with a stable, host-based Atlas favicon color. | Choosing custom colors and its Classic-specific behavior. |
-| [Salesforce advanced Code searcher](https://chromewebstore.google.com/detail/salesforce-advanced-code/lnkgcmpjkkkeffambkllliefdpjdklmi) | Find Apex classes, Apex triggers, and Visualforce pages **by name**. | Search inside source code, Lightning components, editing, and analysis tools. |
-| [Salesforce DevTools](https://chromewebstore.google.com/detail/salesforce-devtools/ehgmhinnhggigkogkbhnbodhbfjgncjf) | Browse objects and fields, run SOQL, and jump to setup pages. | Code generation, definition exports, and mass editing. |
+| [Salesforce Inspector Reloaded](https://chromewebstore.google.com/detail/salesforce-inspector-relo/hpijlohoihegkfehhibggnkbjhoemldh) | Inspect records and fields; query and export CSV; review logs; create, update, upsert, or delete up to 200 rows from CSV; send REST requests; validate or deploy a Metadata API ZIP. | No Bulk API workflow, live event monitor, or complete Inspector feature parity. |
+| [ORGanizer for Salesforce](https://chromewebstore.google.com/detail/organizer-for-salesforce/lojdmgdchjcfnmkmodggbaafecagllnh) | Recognize the active org, switch among open org tabs, and use standard or saved quick links. | No stored account vault, automatic login, or connections to orgs that are not already open and signed in. |
+| [Salesforce Colored Favicons](https://chromewebstore.google.com/detail/salesforce-colored-favico/peohlnebahcddpmfaplmilpkgbkkcdho) | Mark supported org tabs with a stable Atlas color and optionally choose a per-org color. | Some Salesforce page transitions may replace the favicon until Atlas reapplies it; unusual Classic or custom domains may not be recognized. |
+| [Salesforce advanced Code searcher](https://chromewebstore.google.com/detail/salesforce-advanced-code/lnkgcmpjkkkeffambkllliefdpjdklmi) | Find Apex classes, triggers, and Visualforce pages by name; scan bounded accessible Apex, Visualforce, and Lightning source bodies for text. | No source editor, static analysis, or full-org index. Lightning results depend on Tooling API access. |
+| [Salesforce DevTools](https://chromewebstore.google.com/detail/salesforce-devtools/ehgmhinnhggigkogkbhnbodhbfjgncjf) | Browse and export object and field definitions, build simple SOQL, generate a custom-field Metadata API ZIP and Apex test starter, and open setup pages. | Generated test classes are templates requiring real assertions; field generation supports four types; no general mass editor. |
 
-See the [feature map](docs/RESEARCH.md) for the research snapshot and a fuller scope comparison.
+See [research notes](docs/RESEARCH.md) for the public-listing snapshot and technical sources. Features named here are implemented independently using Salesforce and Chrome APIs. This table does not assert that every original extension feature is replaced.
+
+## Install as an unpacked extension
+
+Atlas is **not on the Chrome Web Store**.
+
+1. Clone with `git clone https://github.com/aroramit17/atlas-for-salesforce.git`, or choose **Code → Download ZIP** on GitHub and extract it. To modify your own copy, use GitHub's **Fork** button.
+2. In Chrome 116 or later, open `chrome://extensions` and turn on **Developer mode**.
+3. Select **Load unpacked**, then choose the folder containing `manifest.json`.
+4. Review Chrome's permission prompt. Atlas uses the current Salesforce tab and its session cookie for direct API requests.
+5. Sign in to a Salesforce org, open its tab, and click the Atlas toolbar button. Pin Atlas from Chrome's Extensions menu if you want it always visible.
+6. After pulling a newer version from GitHub, use **Reload** on Atlas's card at `chrome://extensions`, then refresh the Salesforce tab.
+
+No npm installation, Connected App, or external service is required for this unpacked version. `npm` is used only for local tests and ZIP packaging.
 
 ## Screenshots
 
-Captured from the extension running in Chrome against a Salesforce Developer Edition org. The org address is redacted; the query shows metadata rather than customer records.
+These screenshots were captured in Chrome from version 0.1 against a Salesforce Developer Edition org. They show a sanitized metadata query and actual components from that org. The new version 0.2 tools are described below; see [test notes](docs/EXPANSION_TEST.md) for their verification status.
 
 | Home | Query results |
 | --- | --- |
-| ![Atlas home](screenshots/home.png) | ![Metadata SOQL query results](screenshots/query-results.png) |
+| ![Atlas home](screenshots/home.png) | ![Metadata SOQL results](screenshots/query-results.png) |
 
-| Schema browser | Component finder |
+| Schema | Component finder |
 | --- | --- |
 | ![Account field definitions](screenshots/schema-browser.png) | ![Existing Account trigger matches](screenshots/component-finder.png) |
 
 | Debug logs | Quick links |
 | --- | --- |
-| ![A successful recent debug log](screenshots/debug-logs.png) | ![Standard and custom quick links](screenshots/quick-links.png) |
+| ![Recent debug log](screenshots/debug-logs.png) | ![Standard and custom links](screenshots/quick-links.png) |
 
-Also see the [query workspace](screenshots/query-workspace.png). See [live test notes](docs/LIVE_TEST.md) for what was verified.
+Also see the [query editor](screenshots/query-workspace.png) and [version 0.1 live test record](docs/LIVE_TEST.md).
 
-## Install locally
+## Everyday workflow
 
-Atlas is **not listed in the Chrome Web Store**. Install it as an unpacked extension from this source:
+- **Home and Orgs:** Confirm the active org before every operation. Orgs lists open Salesforce tabs; click one to switch. Choose a favicon color for the current org if desired.
+- **Record:** Open a Lightning record page or enter an object API name and record ID to inspect accessible fields and values.
+- **Query:** Write one `SELECT` SOQL query or use the simple builder. Atlas previews 100 rows and exports up to 10,000 returned rows to CSV. A partial result is clearly labeled.
+- **Schema:** Search objects, inspect fields, and download object or selected-field definitions as CSV. A separate generator turns a field-definition CSV into a Metadata API ZIP for review.
+- **Code:** Search component names or text inside accessible source. Source search scans at most 500 items per type and shows an excerpt. Download an Apex test class starter as a starting point for your own test.
+- **Logs and Links:** Read or download accessible recent debug logs; open common setup pages or locally saved, org-specific links.
 
-1. Clone this repository with `git clone https://github.com/aroramit17/atlas-for-salesforce.git`, or use GitHub's **Code → Download ZIP** and extract it. Keep the folder on your computer; Chrome loads files from that folder. Fork it from the GitHub **Fork** button if you want your own copy to modify.
-2. In Chrome 116 or later, open `chrome://extensions` and enable **Developer mode**.
-3. Choose **Load unpacked** and select this folder (the folder containing `manifest.json`).
-4. Review Chrome's permission prompt. Atlas needs access to Salesforce tabs and their session cookie for direct API calls; details are below.
-5. Sign in to a Salesforce org, open an org tab, and click the Atlas extension button (pin it from Chrome's puzzle menu if needed). Chrome opens the side panel. The org strip should say **Connected**.
+## Reviewed changes to Salesforce
 
-No build, npm install, Salesforce Connected App, or external service is required for an unpacked installation. A release ZIP can be made with `npm run package` and unpacked into a folder before using **Load unpacked**.
+**Data:** In **Data**, provide an object name, operation, and CSV file. Select **Review CSV** to validate field names and permissions and preview the first five rows. Type the exact displayed phrase before applying. A request contains 1–200 rows and sets `allOrNone=true`. Create CSVs use field API names; update and delete need `Id`; upsert needs an external ID field in the CSV. An empty cell is omitted, and `#NULL` sends JSON null. Delete files may contain only `Id`. Verify the Salesforce result before retrying a request whose response may have been lost.
 
-## How to use it
+**REST:** In **API**, choose GET, POST, PATCH, PUT, or DELETE and a relative path under `/services/data/v61.0/`. Write methods require typing `WRITE`. Requests go only to the current org's API host. This is a general workbench: review the endpoint, JSON body, and org carefully.
 
-The screenshots above show the main workflow:
+**Metadata:** In **API**, choose a Metadata API ZIP (up to 10 MB), a test level, and **Validate only** or deployment. Type `VALIDATE` or `DEPLOY` to submit. Validation uses Salesforce's check-only option; deployment can change or remove org metadata. Atlas displays the request ID and lets you refresh its status. For custom fields, start with a CSV whose headers are `Object,ApiName,Label,Type,Length,Scale`; the generator supports Text, Number, Checkbox, and Date. Review the generated ZIP and validate it in a non-production org before deployment.
 
-1. **Home:** confirm the active org is connected. The API limit numbers are a snapshot from the last panel refresh.
-2. **Record:** open a Salesforce Lightning record page and select **Record**. Atlas fills in its object and record ID and shows accessible fields and values. You can also enter a different object API name and record ID.
-3. **Query:** enter one read-only `SELECT` SOQL query and select **Run query**. The table previews the first 100 returned rows; **Export CSV** saves all returned rows, up to the stated 10,000-row cap. The [query screenshot](screenshots/query-results.png) uses metadata only.
-4. **Schema:** search an object name, then select it to see field labels, API names, types, and required status. The [schema screenshot](screenshots/schema-browser.png) shows Account.
-5. **Code:** search a component name. Atlas looks for matching Apex classes, triggers, and Visualforce pages. Click a result to copy its ID. The [component screenshot](screenshots/component-finder.png) shows two matches that existed in the test org.
-6. **Logs:** select **Load recent logs**, then choose one to read or download. The [log screenshot](screenshots/debug-logs.png) shows a successful test log with the user name hidden.
-7. **Links:** open common Salesforce destinations or save your own org-specific relative path. The [links screenshot](screenshots/quick-links.png) shows the controls.
+These operations use your existing Salesforce permissions and session. They do not bypass object, field, metadata, or API access controls. The generated ZIP and check-only validation succeeded in a Developer Edition org. Live data writes, REST writes, and a committing metadata deployment have not been exercised. See [verification notes](docs/EXPANSION_TEST.md).
 
-## What works
+## Permissions, privacy, and limits
 
-| Tool | First release behavior |
+| Permission | Purpose |
 | --- | --- |
-| Org context | Detects common production and sandbox Lightning org hosts; marks each org's tab with a deterministic colored Atlas favicon. |
-| Record inspector | Recognizes a Lightning record URL or accepts an object API name and record ID; shows accessible field labels, API names, types, and values. |
-| Query workspace | Runs one read-only `SELECT` SOQL query, follows Salesforce pagination up to 10,000 rows, previews 100 rows, and exports returned rows to CSV. Partial exports are labeled. Spreadsheet formula injection is escaped. |
-| Schema browser | Lists accessible objects and their field definitions. |
-| Component finder | Searches Apex class, Apex trigger, and Visualforce page **names** through the Tooling API; click a result to copy its ID. This does not search source bodies. |
-| Debug logs | Lists the 30 most recent accessible logs, displays a log body, and downloads it. |
-| Quick links | Opens standard Salesforce destinations and saves custom relative paths per org host in local Chrome storage. |
-| Org snapshot | Shows API request limits when the Salesforce Limits resource is available. |
+| `cookies` | Read the current org's `sid` session cookie in the service worker to authorize direct Salesforce API calls. The cookie is never sent to the side panel, saved, or logged. |
+| `tabs` | Find the active org, switch among open org tabs, and open links. |
+| `storage` | Save custom quick links and org colors locally. |
+| `sidePanel` | Show Atlas alongside the org. |
+| Salesforce and Force host access | Call Salesforce REST and Tooling APIs and apply the Atlas favicon. Chrome shows a broad host-access warning. |
 
-All Salesforce API operations in this release are GET requests. Atlas does not edit, delete, deploy, execute Apex, store passwords, or store the `sid` session cookie. Query and record results remain in the side panel's memory until it closes. Custom quick links are the only user data saved by Atlas.
+Atlas supports common HTTPS Salesforce production, sandbox, and Lightning hosts. Custom domains, Government Cloud, Experience Cloud, some Classic and Visualforce hosts, and unusual routing may need more work. The connected user needs API Enabled and access to the requested resources. Some org policies block API use from a browser session. Query export stops at 10,000 rows or 20 pages; source search stops at 500 items per type. CSV changes stop at 200 rows per operation; use an approved bulk tool for larger jobs. Source search can be slow or incomplete for large orgs.
 
-## Permissions and technical limits
-
-| Permission | Why it is needed |
-| --- | --- |
-| `cookies` | Reads the `sid` cookie for the active Salesforce tab to authorize direct Salesforce API calls. The token is used in the extension service worker and is never saved or sent to the panel. |
-| `tabs` | Finds the active org tab and its URL, detects tab changes, and opens quick links. |
-| `storage` | Saves custom links per org host. |
-| `sidePanel` | Shows the workspace beside Salesforce. |
-| Salesforce/Force host access | Allows the service worker to call Salesforce REST/Tooling APIs and the content script to mark org tabs. This is broad access across those domain families and will produce a Chrome permission warning. |
-
-Supported hosts are common `*.my.salesforce.com`, `*.salesforce.com`, and `*.lightning.force.com` URLs over HTTPS. Custom domains, Government Cloud, Experience Cloud, legacy Visualforce domains, unusual sandbox routing, and orgs that do not expose a usable `sid` cookie may need further implementation. Some Salesforce policies disallow API use from the browser session; Atlas then shows the API error. The connected user needs API Enabled and access to each object, field, log, and Tooling API resource. Salesforce API limits apply. Queries are capped at 10,000 returned rows and 20 pages to protect the browser from unbounded exports; use Salesforce Bulk API or another approved tool for large exports.
-
-The favicon is an original Atlas mark and can be replaced by Salesforce during page navigation; the content script reapplies it while the tab is open. It does not change Salesforce data. Because it observes the tab's document head, admins who prefer no page change can remove the `content_scripts` entry from the manifest; all side panel tools continue to work.
+Query, record, API, and source results stay in side-panel memory until it closes. Atlas saves only custom links and chosen colors. It does not save passwords, session tokens, or account credentials. There are no analytics or remote scripts. Review [SECURITY.md](SECURITY.md) before using write tools.
 
 ## Development
 
-Requires Node 20+ only for tests and packaging:
+Node 20+ is needed for tests and packaging only:
 
 ```sh
-npm test
 npm run check
 npm run package
 ```
 
-Source is plain ES modules. `src/background.js` owns Salesforce session access and API requests; `src/core/` contains pure validation and CSV functions; `src/ui/` is the side panel; `src/content/` marks org tabs. There are no third-party runtime dependencies and no remotely hosted scripts.
-
-Tests cover host mapping, validation, query cursor boundaries, CSV escaping, and deterministic org color. A limited live smoke test is documented in [docs/LIVE_TEST.md](docs/LIVE_TEST.md). To verify against your org, use a low privilege test user and check: connection state, record inspection, schema, a small `SELECT Id, Name FROM Account LIMIT 10` query, CSV output, component name lookup, and recent logs if available.
-
-## Roadmap
-
-The [feature map](docs/RESEARCH.md) identifies features studied and the honest first-release scope. Likely next steps: custom domain mapping, source body search with bounded indexing, query history, field filtering, richer log analysis, and optional OAuth with PKCE. Any write operation would need a separate design and explicit confirmation in the UI.
+`src/background.js` handles session and API requests. `src/core/` contains pure validation, CSV, and ZIP code. `src/ui/` is the side panel. `src/content/` manages the favicon. See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidance and [docs/EXPANSION_TEST.md](docs/EXPANSION_TEST.md) for what was verified.
 
 ## License
 

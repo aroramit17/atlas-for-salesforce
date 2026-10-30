@@ -4,39 +4,36 @@
 
 ## Platform
 
-web
+Chrome Manifest V3 side panel.
 
 ## Stack
 
-Plain JavaScript and CSS, no build step (confirmed by user). Chrome Manifest V3.
+Plain JavaScript and CSS, no build step (chosen by user).
 
 ## Users
 
-Salesforce administrators working in an authenticated org tab. Developers are a secondary audience.
+Salesforce administrators working in an authenticated org tab; developers are a secondary audience.
 
-## Product Purpose
+## Product purpose
 
-Bring everyday inspection, read-only query, export, and navigation tasks into one browser side panel. Success means an admin can identify an org, inspect the current record and schema, run a query, and save results without switching tools.
+Bring inspection, query, export, navigation, and carefully reviewed data and metadata tasks into one browser workspace. The initial release prioritized admin productivity. Version 0.2 expands the same workspace with write tools, source search, org tab switching, colors, and definition exports.
 
-## Operating Context
+## Operating context
 
-An active Salesforce tab and the user's existing browser session. The extension talks directly to Salesforce REST and Tooling APIs. It has no backend.
+An active Salesforce tab and the user's existing browser session. The extension talks directly to Salesforce REST, Tooling, and Metadata APIs. It has no backend.
 
-## Capabilities and Constraints
+## Capabilities and constraints
 
-- First release prioritizes admin productivity (confirmed by user).
 - Original open-source implementation; no proprietary code or assets.
-- Read-only API operations in the first release. No credential vault or stored session token.
-- Org API access depends on Salesforce session and permissions; some org policies can block it.
-- Research is a selected comparison of five useful/popular utility extensions, not an exhaustive ranking.
+- The active org must be visible before an operation. Data, REST, and metadata writes require explicit in-panel review or typed confirmation.
+- No credential vault, automatic login, or stored session token.
+- Org API access depends on the current Salesforce session and permissions; some policies block it.
+- Research is a selection of five popular utility extensions, not a definitive ranking or full parity claim.
+- Check-only metadata validation passed in a Developer Edition org; committing write paths still need live integration verification. Local tests cover preparation and validation.
 
-## Evidence on Hand
+## Product principles
 
-The user's brief and public Chrome Web Store feature listings. No user Salesforce org or browser session is available for live integration testing.
-
-## Product Principles
-
-- Keep the active org visible before every operation.
-- Make data export honest about row caps and partial results.
-- Ask for no more browser power than the implemented workflows need.
-- Fail clearly when session or API access is unavailable.
+- Show the active org and make write effects clear.
+- Label row caps, partial exports, and bounded source scans.
+- Use the browser permissions that the implemented workflows need.
+- Fail clearly when Salesforce denies session, object, field, or metadata access.

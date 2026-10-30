@@ -21,9 +21,12 @@
       <button class="nav-item selected" data-view="home" type="button">Home</button>
       <button class="nav-item" data-view="record" type="button">Record</button>
       <button class="nav-item" data-view="query" type="button">Query</button>
+      <button class="nav-item" data-view="data" type="button">Data</button>
       <button class="nav-item" data-view="schema" type="button">Schema</button>
       <button class="nav-item" data-view="components" type="button">Code</button>
       <button class="nav-item" data-view="logs" type="button">Logs</button>
+      <button class="nav-item" data-view="api" type="button">API</button>
+      <button class="nav-item" data-view="orgs" type="button">Orgs</button>
       <button class="nav-item" data-view="links" type="button">Links</button>
     </nav>
     <main>
@@ -55,6 +58,14 @@
 
       <section class="view" id="view-query" hidden>
         <div class="view-heading"><h1>Query workspace</h1><p>Run a read-only SELECT query and export the returned rows.</p></div>
+        <details class="tool-card"><summary>Build a simple SOQL query</summary>
+          <div class="form-stack compact">
+            <label>Object API name<input id="builder-object" placeholder="Account"></label>
+            <label>Field API names, separated by commas<input id="builder-fields" placeholder="Id, Name"></label>
+            <label>Maximum rows<input id="builder-limit" type="number" min="1" max="10000" value="100"></label>
+            <button id="build-query" type="button">Fill query editor</button>
+          </div>
+        </details>
         <form id="query-form" class="form-stack">
           <label>SOQL<textarea id="soql" rows="5" spellcheck="false" required>SELECT Id, Name FROM Account LIMIT 100</textarea></label>
           <div class="action-row"><button class="primary" type="submit">Run query</button><button id="export-csv" type="button" disabled>Export CSV</button></div>
@@ -62,17 +73,46 @@
         <div id="query-result" class="result"></div>
       </section>
 
+      <section class="view" id="view-data" hidden>
+        <div class="view-heading"><h1>Data operations</h1><p>Review a CSV before creating, updating, upserting, or deleting records.</p></div>
+        <div class="message">Operations affect the current org. Atlas accepts up to 200 rows per file and asks for an exact confirmation before sending changes. Empty CSV cells are omitted; use <code>#NULL</code> to clear a field.</div>
+        <form id="data-form" class="form-stack top-gap">
+          <label>Object API name<input id="data-object" placeholder="Account" required></label>
+          <label>Operation<select id="data-mode"><option value="create">Create</option><option value="update">Update by Id</option><option value="upsert">Upsert by external ID</option><option value="delete">Delete by Id</option></select></label>
+          <label id="external-field-label" hidden>External ID field API name<input id="external-field" placeholder="External_Id__c"></label>
+          <label>CSV file<input id="data-file" type="file" accept=".csv,text/csv" required></label>
+          <button class="primary" type="submit">Review CSV</button>
+        </form>
+        <div id="data-review" class="result"></div>
+        <div id="data-confirm" class="form-stack top-gap" hidden>
+          <label>Type <strong id="data-phrase"></strong> to apply<input id="data-confirm-input" autocomplete="off" spellcheck="false"></label>
+          <button id="data-apply" class="danger" type="button">Apply to Salesforce</button>
+        </div>
+        <div id="data-result" class="result"></div>
+      </section>
+
       <section class="view" id="view-schema" hidden>
         <div class="view-heading"><h1>Schema browser</h1><p>Find objects and inspect field definitions.</p></div>
+        <div class="action-row"><button id="export-objects" type="button" disabled>Export object list CSV</button><button id="export-fields" type="button" disabled>Export selected fields CSV</button></div>
         <label class="search-label">Find an object<input id="object-filter" type="search" placeholder="Search label or API name"></label>
         <div id="object-list" class="object-list"></div>
         <div id="field-result" class="result"></div>
+        <details class="tool-card top-gap"><summary>Generate a custom-field deployment ZIP</summary>
+          <p class="muted small">CSV headers: <code>Object,ApiName,Label,Type,Length,Scale</code>. Supports Text, Number, Checkbox, and Date. Review the generated package, then validate it in the API tab before deployment.</p>
+          <div class="form-stack compact"><label>Field definitions CSV<input id="field-file" type="file" accept=".csv,text/csv"></label><button id="generate-fields" type="button">Download metadata ZIP</button></div>
+          <div id="field-package-result" class="result"></div>
+        </details>
       </section>
 
       <section class="view" id="view-components" hidden>
         <div class="view-heading"><h1>Component finder</h1><p>Find Apex classes, triggers, and Visualforce pages by name.</p></div>
         <form id="component-form" class="inline-form"><label class="sr-only" for="component-term">Component name</label><input id="component-term" placeholder="Part of a name" required><button class="primary" type="submit">Find</button></form>
         <div id="component-result" class="result"></div>
+        <div class="section-heading"><h2>Search source bodies</h2></div>
+        <p class="muted small">Scans up to 500 accessible items per type. Results include Apex, Visualforce, and Lightning resources when the Tooling API exposes their source.</p>
+        <form id="source-form" class="inline-form"><label class="sr-only" for="source-term">Text in source</label><input id="source-term" placeholder="At least 3 characters" minlength="3" required><button type="submit">Search</button></form>
+        <div id="source-result" class="result"></div>
+        <details class="tool-card top-gap"><summary>Generate an Apex test class starter</summary><div class="form-stack compact"><label>Class name<input id="test-class-name" placeholder="MyService"></label><button id="generate-test" type="button">Generate and download .cls</button></div></details>
       </section>
 
       <section class="view" id="view-logs" hidden>
@@ -80,6 +120,38 @@
         <button id="load-logs" class="primary" type="button">Load recent logs</button>
         <div id="log-list" class="result"></div>
         <div id="log-detail" class="result"></div>
+      </section>
+
+      <section class="view" id="view-api" hidden>
+        <div class="view-heading"><h1>REST workbench</h1><p>Send a request to the current org's Salesforce REST API.</p></div>
+        <div class="message">Write methods can change or delete org data. Review the path and JSON carefully; Atlas only sends to the connected Salesforce host.</div>
+        <form id="api-form" class="form-stack top-gap">
+          <label>Method<select id="api-method"><option>GET</option><option>POST</option><option>PATCH</option><option>PUT</option><option>DELETE</option></select></label>
+          <label>Relative API path<input id="api-path" value="/services/data/v61.0/limits" spellcheck="false" required></label>
+          <label>JSON body, when needed<textarea id="api-body" rows="6" spellcheck="false" placeholder='{"Name":"Example"}'></textarea></label>
+          <label id="api-confirm-label" hidden>Type WRITE to allow this request<input id="api-confirm" autocomplete="off" spellcheck="false"></label>
+          <button class="primary" type="submit">Send request</button>
+        </form>
+        <div id="api-result" class="result"></div>
+        <div class="section-heading"><h2>Metadata deployment</h2></div>
+        <p class="muted small">Upload a Metadata API format ZIP containing <code>package.xml</code>. Validation does not commit changes. Deployment can change or remove metadata, including fields and code.</p>
+        <form id="metadata-form" class="form-stack">
+          <label>Metadata ZIP<input id="metadata-file" type="file" accept=".zip,application/zip" required></label>
+          <label>Test level<select id="metadata-test-level"><option value="RunLocalTests">Run local tests</option><option value="NoTestRun">No test run (where allowed)</option><option value="RunAllTestsInOrg">Run all tests in org</option></select></label>
+          <label class="checkbox-label"><input id="metadata-check-only" type="checkbox" checked> Validate only</label>
+          <label>Type <strong id="metadata-phrase">VALIDATE</strong> to start<input id="metadata-confirm" autocomplete="off" spellcheck="false" required></label>
+          <button class="danger" type="submit">Start metadata request</button>
+        </form>
+        <div id="metadata-result" class="result"></div>
+      </section>
+
+      <section class="view" id="view-orgs" hidden>
+        <div class="view-heading"><h1>Orgs and tabs</h1><p>Switch between open Salesforce org tabs and choose a tab color.</p></div>
+        <button id="load-org-tabs" type="button">Refresh open org tabs</button>
+        <div id="org-tabs" class="result"></div>
+        <div class="section-heading"><h2>Current org color</h2></div>
+        <div class="form-stack"><label>Atlas favicon color<input id="org-color" type="color" value="#1b7a72"></label><div class="action-row"><button id="save-color" type="button">Save color</button><button id="reset-color" type="button">Use automatic color</button></div></div>
+        <p class="muted small">Atlas saves colors locally by Salesforce API host. It does not store account passwords or automatically sign in.</p>
       </section>
 
       <section class="view" id="view-links" hidden>
@@ -95,7 +167,7 @@
       </section>
     </main>
     <div id="toast" class="toast" role="alert" hidden></div>
-    <footer><span>ATLAS <span class="footer-version">0.1</span></span><span>Read-only · local</span></footer>
+    <footer><span>ATLAS <span class="footer-version">0.2</span></span><span>Local · review writes</span></footer>
   </div>
   <script type="module" src="panel.js"></script>
 </body>
