@@ -4,6 +4,20 @@ A small, original, open-source Salesforce workspace for Chrome. Atlas puts recor
 
 Atlas is an independent community project. It is not affiliated with Salesforce or the extensions studied in [the research notes](docs/RESEARCH.md).
 
+## Which extensions can Atlas replace?
+
+Atlas can replace **specific everyday workflows** from these five Chrome extensions if those are the only features you use. It does not reproduce every feature of any one extension. Each tool below was implemented independently; the linked products are neither dependencies nor endorsements.
+
+| Chrome extension | Workflow Atlas covers | Features to keep the original extension for |
+| --- | --- | --- |
+| [Salesforce Inspector Reloaded](https://chromewebstore.google.com/detail/salesforce-inspector-relo/hpijlohoihegkfehhibggnkbjhoemldh) | Inspect records and fields, run read-only SOQL and export CSV, browse schema, and read recent logs. | Data import, metadata deployment, write API calls, and its broader developer tools. |
+| [ORGanizer for Salesforce](https://chromewebstore.google.com/detail/organizer-for-salesforce/lojdmgdchjcfnmkmodggbaafecagllnh) | Recognize an org and open standard or saved quick links. | Stored accounts, login automation, and its broader multi-org tools. |
+| [Salesforce Colored Favicons](https://chromewebstore.google.com/detail/salesforce-colored-favico/peohlnebahcddpmfaplmilpkgbkkcdho) | Distinguish supported org tabs with a stable, host-based Atlas favicon color. | Choosing custom colors and its Classic-specific behavior. |
+| [Salesforce advanced Code searcher](https://chromewebstore.google.com/detail/salesforce-advanced-code/lnkgcmpjkkkeffambkllliefdpjdklmi) | Find Apex classes, Apex triggers, and Visualforce pages **by name**. | Search inside source code, Lightning components, editing, and analysis tools. |
+| [Salesforce DevTools](https://chromewebstore.google.com/detail/salesforce-devtools/ehgmhinnhggigkogkbhnbodhbfjgncjf) | Browse objects and fields, run SOQL, and jump to setup pages. | Code generation, definition exports, and mass editing. |
+
+See the [feature map](docs/RESEARCH.md) for the research snapshot and a fuller scope comparison.
+
 ## Screenshots
 
 Captured from the extension running in Chrome against a Salesforce Developer Edition org. The org address is redacted; the query shows metadata rather than customer records.
