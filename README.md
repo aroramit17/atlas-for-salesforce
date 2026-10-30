@@ -26,7 +26,7 @@ Also see the [query workspace](screenshots/query-workspace.png). See [live test 
 
 Atlas is **not listed in the Chrome Web Store**. Install it as an unpacked extension from this source:
 
-1. Clone this repository, or use GitHub's **Code → Download ZIP** and extract it. Keep the extracted folder on your computer; Chrome loads files from that folder.
+1. Clone this repository with `git clone https://github.com/aroramit17/atlas-for-salesforce.git`, or use GitHub's **Code → Download ZIP** and extract it. Keep the folder on your computer; Chrome loads files from that folder. Fork it from the GitHub **Fork** button if you want your own copy to modify.
 2. In Chrome 116 or later, open `chrome://extensions` and enable **Developer mode**.
 3. Choose **Load unpacked** and select this folder (the folder containing `manifest.json`).
 4. Review Chrome's permission prompt. Atlas needs access to Salesforce tabs and their session cookie for direct API calls; details are below.
