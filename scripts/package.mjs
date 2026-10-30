@@ -1,0 +1,9 @@
+import { spawnSync } from 'node:child_process';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const output = resolve(root, '..', 'atlas-for-salesforce-0.1.0.zip');
+const files = ['manifest.json', 'src', 'icons', 'screenshots', 'docs', 'tests', 'scripts', 'package.json', '.gitignore', 'PRODUCT.md', 'DESIGN.md', 'README.md', 'LICENSE', 'SECURITY.md', 'CONTRIBUTING.md'];
+const result = spawnSync('zip', ['-q', '-r', output, ...files], { cwd: root, encoding: 'utf8' });
+if (result.status !== 0) throw new Error(result.stderr || 'zip failed');
+console.log(output);

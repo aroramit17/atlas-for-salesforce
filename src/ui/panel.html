@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atlas for Salesforce</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <div class="app">
+    <header class="header">
+      <div class="brand"><span class="brand-mark" aria-hidden="true">A</span><span>Atlas</span></div>
+      <button id="refresh" class="icon-button" type="button" title="Refresh org connection">Refresh</button>
+    </header>
+    <div id="org-strip" class="org-strip" role="status">
+      <span id="org-dot" class="org-dot"></span>
+      <div class="org-copy"><strong id="org-name">Looking for an org…</strong><small id="org-status">Open a Salesforce tab</small></div>
+      <span id="org-state" class="state">Checking</span>
+    </div>
+    <nav class="nav" aria-label="Tools">
+      <button class="nav-item selected" data-view="home" type="button">Home</button>
+      <button class="nav-item" data-view="record" type="button">Record</button>
+      <button class="nav-item" data-view="query" type="button">Query</button>
+      <button class="nav-item" data-view="schema" type="button">Schema</button>
+      <button class="nav-item" data-view="components" type="button">Code</button>
+      <button class="nav-item" data-view="logs" type="button">Logs</button>
+      <button class="nav-item" data-view="links" type="button">Links</button>
+    </nav>
+    <main>
+      <section class="view" id="view-home">
+        <div class="view-heading"><h1>Your org, at hand.</h1><p>Inspect, query, and navigate without losing your place.</p></div>
+        <div id="home-empty" class="notice">Open a Salesforce org tab to use Atlas.</div>
+        <div id="home-ready" hidden>
+          <div class="section-heading"><h2>Start here</h2></div>
+          <div class="quick-actions">
+            <button type="button" data-jump="record"><span>Inspect current record</span><small>Fields and values</small></button>
+            <button type="button" data-jump="query"><span>Run a query</span><small>SOQL and CSV export</small></button>
+            <button type="button" data-jump="schema"><span>Browse schema</span><small>Objects and field details</small></button>
+          </div>
+          <div class="section-heading"><h2>Org snapshot</h2></div>
+          <div class="snapshot"><div><small>API requests remaining</small><strong id="api-remaining">—</strong></div><div><small>Used today</small><strong id="api-used">—</strong></div></div>
+          <p class="muted small">Atlas uses your current browser session. Results stay in this panel until you close it.</p>
+        </div>
+      </section>
+
+      <section class="view" id="view-record" hidden>
+        <div class="view-heading"><h1>Record inspector</h1><p>See API names and values for an accessible record.</p></div>
+        <form id="record-form" class="form-stack">
+          <label>Object API name<input id="record-object" autocomplete="off" placeholder="Account" required></label>
+          <label>Record ID<input id="record-id" autocomplete="off" placeholder="001…" required></label>
+          <button class="primary" type="submit">Inspect record</button>
+        </form>
+        <div id="record-result" class="result"></div>
+      </section>
+
+      <section class="view" id="view-query" hidden>
+        <div class="view-heading"><h1>Query workspace</h1><p>Run a read-only SELECT query and export the returned rows.</p></div>
+        <form id="query-form" class="form-stack">
+          <label>SOQL<textarea id="soql" rows="5" spellcheck="false" required>SELECT Id, Name FROM Account LIMIT 100</textarea></label>
+          <div class="action-row"><button class="primary" type="submit">Run query</button><button id="export-csv" type="button" disabled>Export CSV</button></div>
+        </form>
+        <div id="query-result" class="result"></div>
+      </section>
+
+      <section class="view" id="view-schema" hidden>
+        <div class="view-heading"><h1>Schema browser</h1><p>Find objects and inspect field definitions.</p></div>
+        <label class="search-label">Find an object<input id="object-filter" type="search" placeholder="Search label or API name"></label>
+        <div id="object-list" class="object-list"></div>
+        <div id="field-result" class="result"></div>
+      </section>
+
+      <section class="view" id="view-components" hidden>
+        <div class="view-heading"><h1>Component finder</h1><p>Find Apex classes, triggers, and Visualforce pages by name.</p></div>
+        <form id="component-form" class="inline-form"><label class="sr-only" for="component-term">Component name</label><input id="component-term" placeholder="Part of a name" required><button class="primary" type="submit">Find</button></form>
+        <div id="component-result" class="result"></div>
+      </section>
+
+      <section class="view" id="view-logs" hidden>
+        <div class="view-heading"><h1>Debug logs</h1><p>Review recent logs available to your user.</p></div>
+        <button id="load-logs" class="primary" type="button">Load recent logs</button>
+        <div id="log-list" class="result"></div>
+        <div id="log-detail" class="result"></div>
+      </section>
+
+      <section class="view" id="view-links" hidden>
+        <div class="view-heading"><h1>Quick links</h1><p>Jump to common admin pages in this org.</p></div>
+        <div id="standard-links" class="link-list"></div>
+        <div class="section-heading"><h2>Your links</h2></div>
+        <div id="custom-links" class="link-list"></div>
+        <form id="link-form" class="form-stack add-link">
+          <label>Label<input id="link-label" maxlength="40" placeholder="Team dashboard" required></label>
+          <label>Salesforce path<input id="link-path" placeholder="/lightning/page/home" required></label>
+          <button type="submit">Add link</button>
+        </form>
+      </section>
+    </main>
+    <div id="toast" class="toast" role="alert" hidden></div>
+    <footer><span>ATLAS <span class="footer-version">0.1</span></span><span>Read-only · local</span></footer>
+  </div>
+  <script type="module" src="panel.js"></script>
+</body>
+</html>
